@@ -2,7 +2,10 @@ module conways
 
 go 1.23.1
 
-require github.com/hajimehoshi/ebiten/v2 v2.7.8
+require (
+	github.com/hajimehoshi/ebiten/v2 v2.7.8
+	golang.org/x/image v0.18.0
+)
 
 require (
 	github.com/ebitengine/gomobile v0.0.0-20240518074828-e86332849895 // indirect

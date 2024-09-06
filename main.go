@@ -1,9 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/basicfont"
+	"golang.org/x/image/math/fixed"
+	"image"
 	"image/color"
 	"log"
 	"sync"
@@ -47,15 +52,15 @@ func (g *Game) startIterations() error {
 			if g.evaluateUnderpopulationRule(x, y) {
 				g.grid[x][y].Color = color.NRGBA{0xB0, 0xB0, 0xB0, 0xFF} // Change color back to grey
 			}
-			if g.evaluateSurvivalRule(x, y) {
-				g.grid[x][y].Color = color.NRGBA{0xB0, 0xB0, 0xB0, 0xFF} // Change color back to grey
-			}
-			if g.evaluateOverpopulationRule(x, y) {
-				g.grid[x][y].Color = color.NRGBA{0xB0, 0xB0, 0xB0, 0xFF} // Change color back to grey
-			}
-			if g.evaluateResurrectionRule(x, y) {
-				g.grid[x][y].Color = color.NRGBA{R: 255, G: 255, B: 0, A: 255} // Change color to yellow
-			}
+			//if g.evaluateSurvivalRule(x, y) {
+			//	g.grid[x][y].Color = color.NRGBA{0xB0, 0xB0, 0xB0, 0xFF} // Change color back to grey
+			//}
+			//if g.evaluateOverpopulationRule(x, y) {
+			//	g.grid[x][y].Color = color.NRGBA{0xB0, 0xB0, 0xB0, 0xFF} // Change color back to grey
+			//}
+			//if g.evaluateResurrectionRule(x, y) {
+			//	g.grid[x][y].Color = color.NRGBA{R: 255, G: 255, B: 0, A: 255} // Change color to yellow
+			//}
 		}
 	}
 	return nil
@@ -122,7 +127,7 @@ func (g *Game) countLiveNeighbors(x, y int) int {
 			}
 		}
 	}
-
+	fmt.Println(liveNeighbors)
 	return liveNeighbors
 }
 
@@ -182,12 +187,24 @@ func (g *Game) Update() error {
 	return nil
 }
 func (g *Game) Draw(screen *ebiten.Image) {
+	d := &font.Drawer{
+		Dst:  screen,
+		Src:  image.Black,
+		Face: basicfont.Face7x13,
+	}
 	for i := range g.grid {
 		for j := range g.grid[i] {
-			x := float64(i * cellSize)
-			y := float64(j * cellSize)
+			x := float32(i * cellSize)
+			y := float32(j * cellSize)
 			// Drawing the grid cells with the color from the grid
-			ebitenutil.DrawRect(screen, x, y, cellSize-2, cellSize-2, g.grid[i][j].Color)
+			vector.DrawFilledRect(screen, x, y, cellSize-2, cellSize-2, g.grid[i][j].Color, false)
+
+			// Draw the text "Hello" at this position
+			xStr := i
+			yStr := j
+			d.Dot = fixed.Point26_6{X: fixed.Int26_6((x + 4) * 64), Y: fixed.Int26_6((y + (cellSize / 2)) * 64)}
+			d.DrawString(fmt.Sprintf("%d %d", xStr, yStr))
+			fmt.Println(fmt.Sprintf("%d %d", xStr, yStr))
 		}
 	}
 }
